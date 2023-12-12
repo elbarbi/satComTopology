@@ -1,1 +1,9 @@
-from model import GroundStation, UserTerminal, Satellite, Simulation, InterSatelliteLink, GroundStationLink, UserTerminalLink
+from model import (
+    GroundStation,
+    UserTerminal,
+    Satellite,
+    Simulation,
+    InterSatelliteLink,
+    GroundStationLink,
+    UserTerminalLink,
+)

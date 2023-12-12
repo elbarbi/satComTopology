@@ -1,11 +1,16 @@
-from src.sat_com_model.exception import InterSatelliteConnectionError, GroundStationConnectionError, \
-    UserTerminalConnectionError, SimulationContextError
+from src.sat_com_model.exception import (
+    InterSatelliteConnectionError,
+    GroundStationConnectionError,
+    UserTerminalConnectionError,
+    SimulationContextError,
+)
 
 
 class SpatialPoint:
     """
     This is the lower element of the stack. Every element in the topology has a position
     """
+
     longitude: float
     latitude: float
     altitude: float
@@ -18,6 +23,7 @@ class TopologyObject(SpatialPoint):
     """
     Any Object in the topology
     """
+
     object_name: str
     id: int
 
@@ -26,6 +32,7 @@ class OrbitalObject(TopologyObject):
     """
     Any object in orbit
     """
+
     tle: str
     orbital_object_id: int
 
@@ -54,6 +61,7 @@ class Link:
     This is the communication Link
     Todo: maybe we should directly connect interface here
     """
+
     source: TopologyObject
     destination: TopologyObject
 
@@ -73,11 +81,17 @@ class InterSatelliteLink(Link):
 
 class GroundStationLink(Link):
     def connect(self, source: TopologyObject, destination: TopologyObject):
-        object_source_is_a_gsl_and_destination_a_satellite = source is GroundStation and destination is Satellite
-        object_source_is_a_satellite_and_destination_a_gsl = source is GroundStation and destination is Satellite
+        object_source_is_a_gsl_and_destination_a_satellite = (
+            source is GroundStation and destination is Satellite
+        )
+        object_source_is_a_satellite_and_destination_a_gsl = (
+            source is GroundStation and destination is Satellite
+        )
 
-        cant_connect = (not object_source_is_a_gsl_and_destination_a_satellite and
-                        not object_source_is_a_satellite_and_destination_a_gsl)
+        cant_connect = (
+            not object_source_is_a_gsl_and_destination_a_satellite
+            and not object_source_is_a_satellite_and_destination_a_gsl
+        )
 
         if cant_connect:
             raise GroundStationConnectionError()
@@ -87,11 +101,17 @@ class GroundStationLink(Link):
 
 class UserTerminalLink(Link):
     def connect(self, source: TopologyObject, destination: TopologyObject):
-        object_source_is_an_user_and_destination_a_satellite = source is UserTerminal and destination is Satellite
-        object_source_is_a_satellite_and_destination_an_user = source is GroundStation and destination is UserTerminal
+        object_source_is_an_user_and_destination_a_satellite = (
+            source is UserTerminal and destination is Satellite
+        )
+        object_source_is_a_satellite_and_destination_an_user = (
+            source is GroundStation and destination is UserTerminal
+        )
 
-        cant_connect = (not object_source_is_an_user_and_destination_a_satellite and
-                        not object_source_is_a_satellite_and_destination_an_user)
+        cant_connect = (
+            not object_source_is_an_user_and_destination_a_satellite
+            and not object_source_is_a_satellite_and_destination_an_user
+        )
 
         if cant_connect:
             raise UserTerminalConnectionError()
@@ -111,7 +131,9 @@ class Simulation:
         return attributed_id
 
 
-def create_satellite(simulation_context: Simulation, satellite_name, satellite_id) -> Satellite:
+def create_satellite(
+    simulation_context: Simulation, satellite_name, satellite_id
+) -> Satellite:
     """
     Create a satellite with parameters
     todo: check what we have to put inside a satellite object
@@ -132,7 +154,9 @@ def create_satellite(simulation_context: Simulation, satellite_name, satellite_i
     return created_satellite
 
 
-def create_ground_station(simulation_context: Simulation, ground_station_id: int, city: str) -> GroundStation:
+def create_ground_station(
+    simulation_context: Simulation, ground_station_id: int, city: str
+) -> GroundStation:
     """
     Create a ground station
     :param simulation_context: REQUIRED SIMULATION, very important to identify our future satellite.
@@ -151,7 +175,9 @@ def create_ground_station(simulation_context: Simulation, ground_station_id: int
     return created_ground_station
 
 
-def create_user_terminal(simulation_context: Simulation, user_id, username) -> UserTerminal:
+def create_user_terminal(
+    simulation_context: Simulation, user_id, username
+) -> UserTerminal:
     """
     Create a user terminal
     :param username: username
