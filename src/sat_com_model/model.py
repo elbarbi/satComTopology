@@ -3,6 +3,7 @@ from src.sat_com_model.exception import (
     GroundStationConnectionError,
     UserTerminalConnectionError,
     SimulationContextError,
+    ConnectionBetweenSameSatelliteForbiddenError,
 )
 
 
@@ -62,17 +63,21 @@ class Link:
     Todo: maybe we should directly connect interface here
     """
 
-    source: TopologyObject
-    destination: TopologyObject
+    source: TopologyObject = None
+    destination: TopologyObject = None
 
     def connect(self, source: TopologyObject, destination: TopologyObject):
+        if source == destination:
+            raise ConnectionBetweenSameSatelliteForbiddenError()
         self.source = source
         self.destination = destination
 
 
 class InterSatelliteLink(Link):
     def connect(self, source: TopologyObject, destination: TopologyObject):
-        object_are_both_satellites = source is Satellite and destination is Satellite
+        object_are_both_satellites = isinstance(source, Satellite) and isinstance(
+            destination, Satellite
+        )
         if not object_are_both_satellites:
             raise InterSatelliteConnectionError()
 
@@ -81,12 +86,13 @@ class InterSatelliteLink(Link):
 
 class GroundStationLink(Link):
     def connect(self, source: TopologyObject, destination: TopologyObject):
-        object_source_is_a_gsl_and_destination_a_satellite = (
-            source is GroundStation and destination is Satellite
-        )
-        object_source_is_a_satellite_and_destination_a_gsl = (
-            source is GroundStation and destination is Satellite
-        )
+        object_source_is_a_gsl_and_destination_a_satellite = isinstance(
+            source, GroundStation
+        ) and isinstance(destination, Satellite)
+
+        object_source_is_a_satellite_and_destination_a_gsl = isinstance(
+            source, Satellite
+        ) and isinstance(destination, GroundStation)
 
         cant_connect = (
             not object_source_is_a_gsl_and_destination_a_satellite
@@ -101,20 +107,23 @@ class GroundStationLink(Link):
 
 class UserTerminalLink(Link):
     def connect(self, source: TopologyObject, destination: TopologyObject):
-        object_source_is_an_user_and_destination_a_satellite = (
-            source is UserTerminal and destination is Satellite
-        )
-        object_source_is_a_satellite_and_destination_an_user = (
-            source is GroundStation and destination is UserTerminal
-        )
+        object_source_is_a_user_and_destination_a_satellite = isinstance(
+            source, UserTerminal
+        ) and isinstance(destination, Satellite)
+
+        object_source_is_a_satellite_and_destination_a_user = isinstance(
+            source, Satellite
+        ) and isinstance(destination, UserTerminal)
 
         cant_connect = (
-            not object_source_is_an_user_and_destination_a_satellite
-            and not object_source_is_a_satellite_and_destination_an_user
+            not object_source_is_a_user_and_destination_a_satellite
+            and not object_source_is_a_satellite_and_destination_a_user
         )
 
         if cant_connect:
             raise UserTerminalConnectionError()
+
+        super().connect(source, destination)
 
 
 class Simulation:

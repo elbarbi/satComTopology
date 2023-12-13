@@ -1,12 +1,20 @@
-class InterSatelliteConnectionError(Exception):
+class TopologyConnectionError(Exception):
     pass
 
 
-class GroundStationConnectionError(Exception):
+class ConnectionBetweenSameSatelliteForbiddenError(TopologyConnectionError):
     pass
 
 
-class UserTerminalConnectionError(Exception):
+class InterSatelliteConnectionError(TopologyConnectionError):
+    pass
+
+
+class GroundStationConnectionError(TopologyConnectionError):
+    pass
+
+
+class UserTerminalConnectionError(TopologyConnectionError):
     pass
 
 
